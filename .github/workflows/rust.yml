@@ -1,31 +1,24 @@
-# .github/workflows/build.yml
-name: Build
+name: Rust
 
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   build:
-    name: Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: windows-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: test build rust project
-        uses: lxl66566/rust-simple-release@main
-        with:
-          # Targets to compile, seperated by comma (allow space)
-          # Support Linux, Windows and Darwin
-          targets: x86_64-pc-windows-msvc, x86_64-unknown-linux-gnu, aarch64-apple-darwin
-
-          # Files or folders to pack into release assets, relative path seperated by comma.
-          # The files and folers will be added to the root path of archive.
-          # Build outputs (bins and lib) will automatically added to the archive, you don't need to add them twice.
-          files_to_pack: README.md, LICENSE
-          
-          # GITHUB TOKEN, **REQUIRED**
-          token: ${{ secrets.GITHUB_TOKEN }}
-
+    - uses: actions/checkout@v4
+    - name: Build
+      run: | 
+        rustup target add x86_64-pc-windows-msvc
+        cargo build --verbose --target=x86_64-pc-windows-msvc --release --features=fltk-bundled
+    - name: Run tests
+      run: cargo test --verbose
