@@ -20,5 +20,12 @@ jobs:
       run: | 
         rustup target add x86_64-pc-windows-msvc
         cargo build --verbose --target=x86_64-pc-windows-msvc --release 
+    
+    - name: Upload assets
+      uses: actions/upload-artifact@v3
+      with:
+        name: intes
+        path: target/release/*
+          
     - name: Run tests
       run: cargo test --verbose
