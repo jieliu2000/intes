@@ -19,6 +19,6 @@ jobs:
     - name: Build
       run: | 
         rustup target add x86_64-pc-windows-msvc
-        cargo build --verbose --target=x86_64-pc-windows-msvc --release --features=fltk-bundled
+        cargo build --verbose --target=x86_64-pc-windows-msvc --release 
     - name: Run tests
       run: cargo test --verbose
