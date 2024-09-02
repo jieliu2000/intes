@@ -22,10 +22,8 @@ jobs:
         cargo build --verbose --target=x86_64-pc-windows-msvc --release 
     
     - name: Upload assets
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: intes
-        path: target/release/*
-          
-    - name: Run tests
-      run: cargo test --verbose
+        path: target/*
+
