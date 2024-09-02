@@ -18,7 +18,7 @@ jobs:
         run: |
           rustup target add x86_64-pc-windows-msvc
           cargo build --verbose --target=x86_64-pc-windows-msvc --release 
-          zip --junk-paths intes-x86_64-pc-windows-msvc target/x86_64-pc-windows-msvc/release/intes.exe
+          tar.exe -a -c -f intes-x86_64-pc-windows-msvc.zip target/x86_64-pc-windows-msvc/release/intes.exe
 
       - name: Create Release
         id: create_release
