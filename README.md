@@ -16,7 +16,7 @@ cargo build --release
 
 On windows you need to install the VC runtime. Download from https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
 
-To install the fixtures, run the following command:
+To install the runtime, run the following command:
 
 ```shell
 VC_redist.x64.exe /install /passive /norestart
