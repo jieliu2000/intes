@@ -27,5 +27,5 @@ jobs:
           files_to_pack: README.md, LICENSE
           
           # GITHUB TOKEN, **REQUIRED**
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
