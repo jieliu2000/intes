@@ -116,6 +116,34 @@ fn draw_tabs() -> Vec<Box<dyn Accessible>> {
 
     let client_area = tab.client_area();
 
+    draw_mouse_tab(client_area, &mut controls);
+
+    draw_keyboard_tab(client_area, &mut controls);
+
+    tab.end();
+    tab.auto_layout();
+    return controls;
+}
+
+fn draw_keyboard_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<dyn Accessible>>) {
+    let mut keyboard_test_flex = Flex::default_fill()
+        .with_size(client_area.2, client_area.3)
+        .center_of_parent()
+        .with_label("Keyboard Test");
+
+    keyboard_test_flex.set_type(group::FlexType::Column);
+    keyboard_test_flex.set_margin(20);
+
+    let mut input = input::MultilineInput::default()
+        .with_label("Input box:")
+        .with_size(client_area.2 - 40, client_area.3 - 100);
+    input.set_id("main_text_input");
+
+    keyboard_test_flex.end();
+    controls.push(Box::new(keyboard_test_flex));
+}
+
+fn draw_mouse_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<dyn Accessible>>) {
     let mut mouse_test_flex = group::Flex::default_fill()
         .with_size(client_area.2, client_area.3)
         .center_of_parent()
@@ -158,12 +186,6 @@ fn draw_tabs() -> Vec<Box<dyn Accessible>> {
     }
     mouse_test_vpack.end();
     mouse_test_flex.end();
-
-    let keyboard_test_flex = Flex::default_fill().with_label("Keyboard Test\t\t").row();
-    keyboard_test_flex.end();
-    tab.end();
-    tab.auto_layout();
-    return controls;
 }
 
 fn add_mouse_test_tab_first_line(
