@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 fltk = "^1.4"
 fltk-theme = "0.7"
+fltk-accesskit = "0.1.0"
