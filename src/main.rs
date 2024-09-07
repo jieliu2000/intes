@@ -6,8 +6,9 @@ use fltk::{
     draw::{self},
     enums::{self, Event},
     frame,
-    group::{self, Flex, Tabs},
-    input,
+    group::{self, experimental::Grid, Flex, Tabs},
+    input::{self, Input},
+    output,
     prelude::{DisplayExt, GroupExt, InputExt, WidgetBase, WidgetExt, WindowExt},
     text,
     widget::{self, Widget},
@@ -31,6 +32,9 @@ impl IntesEvent {
     const MOUSE_IN: Event = Event::from_i32(65);
     const BUTTON1_CLICK: Event = Event::from_i32(66);
     const BUTTON2_CLICK: Event = Event::from_i32(67);
+}
+struct LabeledComponent {
+    inner: widget::Widget,
 }
 
 struct MouseKeyboardActionContext {
@@ -126,6 +130,23 @@ fn draw_tabs() -> Vec<Box<dyn Accessible>> {
     return controls;
 }
 
+impl LabeledComponent {
+    pub fn new(label: &str, component: widget::Widget, width: i32, height: i32) -> Self {
+        let mut hpack = group::Pack::default()
+            .with_size(0, 30)
+            .with_type(group::PackType::Horizontal);
+
+        hpack.set_spacing(10);
+
+        let mut inner = widget::Widget::default()
+            .with_size(width, height)
+            .with_label(label)
+            .with_align(enums::Align::Inside | enums::Align::Top);
+
+        LabeledComponent { inner }
+    }
+}
+
 fn draw_keyboard_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<dyn Accessible>>) {
     let mut keyboard_test_flex = Flex::default_fill()
         .with_size(client_area.2, client_area.3)
@@ -136,24 +157,46 @@ fn draw_keyboard_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<d
     keyboard_test_flex.set_margin(20);
 
     let mut keyboard_test_vpack = group::Pack::default_fill()
-        .with_size(client_area.2, client_area.3)
+        .with_size(client_area.2 - 100, client_area.3)
+        .with_align(enums::Align::Left)
         .center_of_parent();
 
     keyboard_test_vpack.set_type(group::PackType::Vertical);
-    keyboard_test_vpack.set_spacing(30);
+    keyboard_test_vpack.set_spacing(10);
+
+    let mut hpack = group::Pack::default()
+        .with_size(0, 30)
+        .with_type(group::PackType::Horizontal)
+        .center_of(&keyboard_test_vpack);
+    hpack.set_spacing(10);
+
+    let _label = frame::Frame::default()
+        .with_size(50, 30)
+        .with_label("Textbox 1:");
+    let input_box_1 = Input::default().with_size(180, 30);
+    hpack.end();
+
+    let mut hpack = group::Pack::default()
+        .with_size(0, 10)
+        .center_of(&keyboard_test_vpack);
+
+    hpack.set_type(group::PackType::Horizontal);
+    // widget, row, col
+    let _inner = frame::Frame::default()
+        .with_size(60, 10)
+        .with_label("Text Editor:");
+
+    hpack.end();
 
     let mut buf = text::TextBuffer::default();
 
-    let mut textBox = text::TextEditor::default()
-        .with_label("Text Editor")
+    let mut main_text_box = text::TextEditor::default()
+        .with_align(enums::Align::Left)
         .with_size(0, 100);
 
-    textBox.set_buffer(buf.clone());
-
-    textBox.set_id("main_text_input");
-    buf.set_text("Hello world!");
-    buf.append("\n");
-    buf.append("This is a text editor!");
+    main_text_box.set_buffer(buf.clone());
+    main_text_box.set_scrollbar_align(enums::Align::Right);
+    main_text_box.set_id("main_text_input");
 
     keyboard_test_vpack.end();
     keyboard_test_flex.end();
@@ -193,7 +236,7 @@ fn draw_mouse_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<dyn 
     ];
 
     for (height, part_definition) in part_definitions {
-        controls.append(&mut add_controls_hpack(
+        controls.append(&mut add_mouse_controls_hpack(
             &mouse_test_vpack,
             height,
             part_definition,
@@ -329,7 +372,7 @@ fn add_mouse_test_tab_second_line(
     return vec![];
 }
 
-fn add_controls_hpack(
+fn add_mouse_controls_hpack(
     grp1: &group::Pack,
     height: i32,
     add_components: fn(
