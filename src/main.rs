@@ -8,7 +8,8 @@ use fltk::{
     frame,
     group::{self, Flex, Tabs},
     input,
-    prelude::{GroupExt, InputExt, WidgetBase, WidgetExt, WindowExt},
+    prelude::{DisplayExt, GroupExt, InputExt, WidgetBase, WidgetExt, WindowExt},
+    text,
     widget::{self, Widget},
     widget_extends,
     window::Window,
@@ -129,16 +130,32 @@ fn draw_keyboard_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<d
     let mut keyboard_test_flex = Flex::default_fill()
         .with_size(client_area.2, client_area.3)
         .center_of_parent()
-        .with_label("Keyboard Test");
+        .with_label("Keyboard Test\t");
 
     keyboard_test_flex.set_type(group::FlexType::Column);
     keyboard_test_flex.set_margin(20);
 
-    let mut input = input::MultilineInput::default()
-        .with_label("Input box:")
-        .with_size(client_area.2 - 40, client_area.3 - 100);
-    input.set_id("main_text_input");
+    let mut keyboard_test_vpack = group::Pack::default_fill()
+        .with_size(client_area.2, client_area.3)
+        .center_of_parent();
 
+    keyboard_test_vpack.set_type(group::PackType::Vertical);
+    keyboard_test_vpack.set_spacing(30);
+
+    let mut buf = text::TextBuffer::default();
+
+    let mut textBox = text::TextEditor::default()
+        .with_label("Text Editor")
+        .with_size(0, 100);
+
+    textBox.set_buffer(buf.clone());
+
+    textBox.set_id("main_text_input");
+    buf.set_text("Hello world!");
+    buf.append("\n");
+    buf.append("This is a text editor!");
+
+    keyboard_test_vpack.end();
     keyboard_test_flex.end();
     controls.push(Box::new(keyboard_test_flex));
 }
@@ -147,7 +164,7 @@ fn draw_mouse_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<dyn 
     let mut mouse_test_flex = group::Flex::default_fill()
         .with_size(client_area.2, client_area.3)
         .center_of_parent()
-        .with_label("Mouse Test");
+        .with_label("Mouse Test\t");
 
     mouse_test_flex.set_type(group::FlexType::Column);
     mouse_test_flex.set_margin(20);
