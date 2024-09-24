@@ -30,4 +30,4 @@ jobs:
         with:
           name: intes
           compression-level: 0
-          path: target/*
+          path: target/**/release/intes*
