@@ -172,7 +172,24 @@ fn draw_keyboard_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<d
     let _label = frame::Frame::default()
         .with_size(50, 30)
         .with_label("Textbox 1:");
-    let input_box_1 = Input::default().with_size(180, 30);
+    
+    // 自定义绘制带padding的Input
+    let mut input_box_1 = Input::default().with_size(180, 30);
+    input_box_1.draw(|i| {
+        // 绘制背景
+        draw::draw_box(i.frame(), i.x(), i.y(), i.w(), i.h(), i.color());
+        
+        // 设置文本颜色
+        draw::set_draw_color(enums::Color::Black);
+        
+        // 计算带padding的文本区域
+        let text_x = i.x() + 10;  // 左padding
+        let text_w = i.w() - 20;  // 减去左右padding
+        
+        // 绘制文本，保持垂直位置不变
+        draw::draw_text2(&i.value(), text_x, i.y(), text_w, i.h(), i.align());
+    });
+    
     hpack.end();
 
     let mut hpack = group::Pack::default()
