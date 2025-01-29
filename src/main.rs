@@ -6,7 +6,7 @@ use fltk::{
     draw::{self},
     enums::{self, Event},
     frame,
-    group::{self,  Flex, Tabs},
+    group::{self, Flex, Tabs},
     input::{self, Input},
     prelude::{DisplayExt, GroupExt, InputExt, WidgetBase, WidgetExt, WindowExt},
     text,
@@ -122,6 +122,8 @@ fn draw_tabs() -> Vec<Box<dyn Accessible>> {
 
     draw_mouse_tab(client_area, &mut controls);
 
+    draw_keyboard_tab1(client_area, &mut controls);
+
     draw_keyboard_tab(client_area, &mut controls);
 
     tab.end();
@@ -146,6 +148,49 @@ impl LabeledComponent {
     }
 }
 
+fn draw_keyboard_tab1(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<dyn Accessible>>) {
+    let mut keyboard_test_flex = group::Flex::default_fill()
+        .with_size(client_area.2, client_area.3)
+        .center_of_parent()
+        .with_label("Keyboard Test\t");
+
+    keyboard_test_flex.set_type(group::FlexType::Column);
+    keyboard_test_flex.set_margin(20);
+
+    let mut keyboard_test_vpack = group::Pack::default_fill()
+        .with_size(client_area.2, client_area.3)
+        .center_of_parent();
+
+    keyboard_test_vpack.set_type(group::PackType::Vertical);
+    keyboard_test_vpack.set_spacing(30);
+
+    let mouse_handler = Rc::new(RefCell::new(MouseKeyboardActionContext {
+        mouse_x: 0,
+        mouse_y: 0,
+        button: "".to_string(),
+    }));
+
+    let part_definitions: [(
+        i32,
+        fn(&group::Pack, Rc<RefCell<MouseKeyboardActionContext>>) -> Vec<Box<dyn Accessible>>,
+    ); 2] = [
+        (30, add_mouse_test_tab_first_line),
+        (100, add_mouse_test_tab_second_line),
+    ];
+
+    for (height, part_definition) in part_definitions {
+        controls.append(&mut add_mouse_controls_hpack(
+            &keyboard_test_vpack,
+            height,
+            part_definition,
+            &keyboard_test_vpack,
+            Rc::clone(&mouse_handler),
+        ));
+    }
+    keyboard_test_vpack.end();
+    keyboard_test_flex.end();
+}
+
 fn draw_keyboard_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<dyn Accessible>>) {
     let mut keyboard_test_flex = Flex::default_fill()
         .with_size(client_area.2, client_area.3)
@@ -165,8 +210,9 @@ fn draw_keyboard_tab(client_area: (i32, i32, i32, i32), controls: &mut Vec<Box<d
 
     let mut hpack = group::Pack::default()
         .with_size(0, 30)
-        .with_type(group::PackType::Horizontal)
-        .center_of(&keyboard_test_vpack);
+        .with_type(group::PackType::Vertical)
+        .with_align(enums::Align::Left)
+        .center_of_parent();
     hpack.set_spacing(10);
 
     let _label = frame::Frame::default()
